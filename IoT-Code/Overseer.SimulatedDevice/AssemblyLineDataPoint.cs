@@ -67,9 +67,9 @@ namespace Overseer.SimulatedDevice
             Random rand = new();
 
             // random value for simulation
-            var currentTemperature = DataPointConstants.minTemperature + (decimal)rand.NextDouble() * 15;
-            var currentHumidity = DataPointConstants.minHumidity + (decimal)rand.NextDouble() * 20;
-            var currentJobFinishCycle = DataPointConstants.minJobFinishCycle.Add(new TimeSpan(0, 0, rand.Next(5) * 5));
+            var currentTemperature = DataPointConstants.MinTemperature + (decimal)rand.NextDouble() * 15;
+            var currentHumidity = DataPointConstants.MinHumidity + (decimal)rand.NextDouble() * 20;
+            var currentJobFinishCycle = DataPointConstants.MinJobFinishCycle.Add(new TimeSpan(0, 0, rand.Next(30) * 5));
             var currentJobOKSignal = new RandomHelper().NextBoolean();
             var currentJobNGSignal = new RandomHelper().NextBoolean();
             var currentDeviceStatus = true;

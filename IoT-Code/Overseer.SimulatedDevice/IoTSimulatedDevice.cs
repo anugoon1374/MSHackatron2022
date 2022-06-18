@@ -17,7 +17,7 @@ namespace Overseer.SimulatedDevice
         /// <summary>
         /// The device connection string to authenticate the device with Azure IoT Hub.
         /// </summary>
-        private const string azureIoTConnectionString = "";
+        private const string AzureIoTConnectionString = "";
 
         /// <summary>
         /// The delay time between message in milliseconds.
@@ -39,7 +39,7 @@ namespace Overseer.SimulatedDevice
             try
             {
                 // connect device to the IoT hub using the MQTT protocol
-                deviceClient = DeviceClient.CreateFromConnectionString(azureIoTConnectionString, TransportType.Mqtt);
+                deviceClient = DeviceClient.CreateFromConnectionString(AzureIoTConnectionString, TransportType.Mqtt);
 
                 // loop sending telemetry
                 SendTelemetryToAzureIoTHubAsync();
@@ -81,9 +81,12 @@ namespace Overseer.SimulatedDevice
             var messageString = JsonConvert.SerializeObject(assemblyLineDataPoint);
             var message = new Message(Encoding.ASCII.GetBytes(messageString));
 
-            // Add a custom application property to the message.
-            // An IoT hub can filter on these properties without access to the message body.
-            message.Properties.Add("temperatureAlert", (assemblyLineDataPoint.Temperature > 30) ? "true" : "false");
+            // A custom property to the message.
+            // IoT hub can filter on these properties without access to the message body.
+            message.Properties.Add("temperatureAlert", (assemblyLineDataPoint.Temperature > DataPointConstants.TemperatureAlertThreshold) ? "true" : "false");
+            message.Properties.Add("jobFinishCycleAlert", (assemblyLineDataPoint.JobFinishCycle > DataPointConstants.JobFinishCycleAlertThreshold) ? "true" : "false");
+            message.Properties.Add("cameraFailureAlert", ((!assemblyLineDataPoint.JobOKSignal && !assemblyLineDataPoint.JobNGSignal) || (assemblyLineDataPoint.JobOKSignal && assemblyLineDataPoint.JobNGSignal)) ? "true" : "false");
+            message.Properties.Add("sensorTurnOffAlert", (!assemblyLineDataPoint.DeviceStatus) ? "true" : "false");
 
             return message;
         }
