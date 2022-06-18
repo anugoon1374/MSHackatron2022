@@ -12,5 +12,6 @@ This repository have to two folder :
 - ML-Code folder does not contain all training datasets, only some samples for the prototype.
 
 ## About IoT-Code
-- IoT-Code does not contains a connection string and shared access signature (SAS) to access Azure IoT Hub.
+- IoT-Code does not contain a connection string and shared access signature (SAS) to access Azure IoT Hub.
 - IoT-Code solution can be open with Visual Studio IDE or Visual Studio Code (require Azure IoT Device Workbench extension and .NET 6 SDK installed)
+- To build IoT-Code, it requires .NET 6 framework, C# 11, and Azure IoT SDK installed on the machine.

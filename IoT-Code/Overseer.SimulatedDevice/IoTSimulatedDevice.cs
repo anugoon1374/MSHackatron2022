@@ -1,10 +1,4 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
-
-// This application uses the Azure IoT Hub device SDK for .NET
-// For samples see: https://github.com/Azure/azure-iot-sdk-csharp/tree/master/iothub/device/samples
-
-using Microsoft.Azure.Devices.Client;
+﻿using Microsoft.Azure.Devices.Client;
 using Newtonsoft.Json;
 using System;
 using System.Text;
@@ -12,55 +6,86 @@ using System.Threading.Tasks;
 
 namespace Overseer.SimulatedDevice
 {
+    /// <summary>
+    /// The console application for simulate IoT device telemetry and send to Azure IoT Hub.
+    /// </summary>
+    /// <remarks>
+    /// To build this application, it require .NET 6 SDK, C# 11, and Azure IoT Hub device SDK for .NET installed.
+    /// </remarks>
     internal class IoTSimulatedDevice
     {
-        private static DeviceClient s_deviceClient;
+        /// <summary>
+        /// The device connection string to authenticate the device with Azure IoT Hub.
+        /// </summary>
+        private const string azureIoTConnectionString = "";
 
-        // The device connection string to authenticate the device with your IoT hub.
-        private const string s_connectionString = "";
+        /// <summary>
+        /// The delay time between message in milliseconds.
+        /// </summary>
+        private const int DelayMilliseconds = 1000;
 
-        // Async method to send simulated telemetry
-        private static async void SendDeviceToCloudMessagesAsync()
+        /// <summary>
+        /// The Azure device client.
+        /// </summary>
+        private static DeviceClient deviceClient;
+
+        /// <summary>
+        /// Defines the entry point of the application.
+        /// </summary>
+        private static void Main()
         {
-            // Initial telemetry values
-            double minTemperature = 20;
-            double minHumidity = 60;
-            Random rand = new Random();
+            Console.WriteLine("Simulating IoT device telemetry. Press Ctrl-C to exit.\n");
 
+            try
+            {
+                // connect device to the IoT hub using the MQTT protocol
+                deviceClient = DeviceClient.CreateFromConnectionString(azureIoTConnectionString, TransportType.Mqtt);
+
+                // loop sending telemetry
+                SendTelemetryToAzureIoTHubAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unable to connect to Azure IoT Hub. \n{ex}");
+            }
+
+            Console.ReadLine();
+        }
+
+        /// <summary>
+        /// Sends the randomly generated telemetry to Azure IoT Hub.
+        /// </summary>
+        private static async void SendTelemetryToAzureIoTHubAsync()
+        {
             while (true)
             {
-                double currentTemperature = minTemperature + rand.NextDouble() * 15;
-                double currentHumidity = minHumidity + rand.NextDouble() * 20;
+                // intialize data point and message
+                var generatedDataPoint = AssemblyLineDataPoint.GenerateRandomDataPoint();
+                var message = CreateAzureIoTMessage(generatedDataPoint);
 
-                // Create JSON message
-                var telemetryDataPoint = new
-                {
-                    temperature = currentTemperature,
-                    humidity = currentHumidity
-                };
-                var messageString = JsonConvert.SerializeObject(telemetryDataPoint);
-                var message = new Message(Encoding.ASCII.GetBytes(messageString));
+                // send the telemetry message
+                await deviceClient.SendEventAsync(message).ConfigureAwait(false);
+                Console.WriteLine("{0} >> Sending message: {1}", DateTime.Now, JsonConvert.SerializeObject(generatedDataPoint));
 
-                // Add a custom application property to the message.
-                // An IoT hub can filter on these properties without access to the message body.
-                message.Properties.Add("temperatureAlert", (currentTemperature > 30) ? "true" : "false");
-
-                // Send the tlemetry message
-                await s_deviceClient.SendEventAsync(message).ConfigureAwait(false);
-                Console.WriteLine("{0} > Sending message: {1}", DateTime.Now, messageString);
-
-                await Task.Delay(1000).ConfigureAwait(false);
+                await Task.Delay(DelayMilliseconds).ConfigureAwait(false);
             }
         }
 
-        private static void Main()
+        /// <summary>
+        /// Creates the Azure IoT message from <see cref="AssemblyLineDataPoint"/>.
+        /// </summary>
+        /// <param name="assemblyLineDataPoint">The assembly line data point.</param>
+        /// <returns>Azure IoT device client message.</returns>
+        private static Message CreateAzureIoTMessage(AssemblyLineDataPoint assemblyLineDataPoint)
         {
-            Console.WriteLine("IoT Hub Quickstarts - Simulated device. Ctrl-C to exit.\n");
+            var messageString = JsonConvert.SerializeObject(assemblyLineDataPoint);
+            var message = new Message(Encoding.ASCII.GetBytes(messageString));
 
-            // Connect to the IoT hub using the MQTT protocol
-            s_deviceClient = DeviceClient.CreateFromConnectionString(s_connectionString, TransportType.Mqtt);
-            SendDeviceToCloudMessagesAsync();
-            Console.ReadLine();
+            // Add a custom application property to the message.
+            // An IoT hub can filter on these properties without access to the message body.
+            message.Properties.Add("temperatureAlert", (assemblyLineDataPoint.Temperature > 30) ? "true" : "false");
+
+            return message;
         }
     }
 }
