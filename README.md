@@ -2,9 +2,10 @@
 This repository contains the prototype code of the team "Overseer by Unit B" for [Microsoft Virtual Hackathon 2022](https://www.hackerearth.com/challenges/hackathon/microsoft-virtual-hackathon-2022).
 
 ## Structure
-This repository have to two folder :
+This repository have to three parts:
 1. IoT-Code folder contains the C# code for simulating signals from factory IoT device in the manufacturing line.
 2. ML-Code folder contains the Juniper Notebook code for Machine Learning Model training. The machine learning model is use with camera installed in the manufacturing line to detect the defective product.
+3. PowerBI report file
 
 ## About ML-Code
 - Juniper Notebook code (.ipynb) can be open with Google Colabs or Jupyter Notebooks in Visual Studio Code.
@@ -15,3 +16,7 @@ This repository have to two folder :
 - IoT-Code does not contain a connection string and shared access signature (SAS) to access Azure IoT Hub.
 - IoT-Code solution can be open with Visual Studio IDE or Visual Studio Code (require Azure IoT Device Workbench extension and .NET 6 SDK installed)
 - To build IoT-Code, it requires .NET 6 framework, C# 11, and Azure IoT SDK installed on the machine.
+
+## PowerBI report file
+- PowerBI report file (PBIX) can be open with Power BI Desktop.
+- However, you would not be able run it. As it is require permission to connect to the Azure Stream Analytics output.
