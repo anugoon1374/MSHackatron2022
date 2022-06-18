@@ -72,7 +72,7 @@ namespace Overseer.SimulatedDevice
         /// <value>
         ///   <c>true</c> if time to finish each job over the specific threhold; otherwise, <c>false</c>.
         /// </value>
-        public bool JobFinishCycleAlert => JobFinishCycle > DataPointConstants.JobFinishCycleAlertThreshold
+        public bool JobFinishCycleAlert => JobFinishCycle > DataPointConstants.JobFinishCycleAlertThreshold;
 
         /// <summary>
         /// Gets a value indicating whether camera sensor is malfunction.
