@@ -59,6 +59,31 @@ namespace Overseer.SimulatedDevice
         public bool DeviceStatus { get; init; }
 
         /// <summary>
+        /// Gets a value indicating whether temperature over the specific threhold.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if temperature over the specific threhold; otherwise, <c>false</c>.
+        /// </value>
+        public bool TemperatureAlert => Temperature > DataPointConstants.TemperatureAlertThreshold;
+
+        /// <summary>
+        /// Gets a value indicating whether time to finish each job over the specific threhold.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if time to finish each job over the specific threhold; otherwise, <c>false</c>.
+        /// </value>
+        public bool JobFinishCycleAlert => JobFinishCycle > DataPointConstants.JobFinishCycleAlertThreshold
+
+        /// <summary>
+        /// Gets a value indicating whether camera sensor is malfunction.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if camera sensor is malfunction; otherwise, <c>false</c>.
+        /// </value>
+        public bool CameraFailureAlert => (!JobOKSignal && !JobNGSignal) || (JobOKSignal && JobNGSignal);
+
+
+        /// <summary>
         /// Randomly generates <see cref="AssemblyLineDataPoint"/>.
         /// </summary>
         /// <returns>A randomly generated data point.</returns>
