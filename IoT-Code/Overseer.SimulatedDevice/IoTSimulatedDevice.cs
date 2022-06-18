@@ -10,9 +10,9 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace simulatedDevice
+namespace Overseer.SimulatedDevice
 {
-    internal class SimulatedDevice
+    internal class IoTSimulatedDevice
     {
         private static DeviceClient s_deviceClient;
 
